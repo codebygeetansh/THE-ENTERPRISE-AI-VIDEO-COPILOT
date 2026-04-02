@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Video Copilot | AI Expert</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- CANVAS FOR PARTICLE / NEURAL NETWORK ANIMATION -->
+    <canvas id="neural-canvas"></canvas>
+
+    <!-- SCANLINE OVERLAY -->
+    <div class="scanline-overlay"></div>
+
+    <!-- GRID OVERLAY -->
+    <div class="grid-overlay"></div>
+
+    <!-- CORNER DECORATIONS -->
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+
+    <div class="app-container">
+        <header class="glass-header">
+            <div class="header-left">
+                <div class="logo-mark">
+                    <div class="logo-ring"></div>
+                    <div class="logo-core">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                </div>
+                <div class="brand-info">
+                    <span class="brand-name">ENTERPRISE COPILOT</span>
+                    <span class="brand-sub">System Design Intelligence</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="model-tag">
+                    <span class="model-dot"></span>
+                    <span>RAG · LLaMA · FAISS</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-cluster">
+                    <div class="status-item">
+                        <div class="pulse-orb"></div>
+                        <span>ONLINE</span>
+                    </div>
+                    <div class="divider-v"></div>
+                    <div class="status-item">
+                        <span class="stat-num" id="query-count">0</span>
+                        <span>QUERIES</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- PROGRESS BAR -->
+        <div class="header-progress">
+            <div class="progress-fill"></div>
+        </div>
+
+        <main class="chat-viewport" id="chat-box">
+            <!-- WELCOME CARD -->
+            <div class="welcome-card">
+                <div class="welcome-glyph">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4l3 3"/>
+                    </svg>
+                </div>
+                <div class="welcome-body">
+                    <h2 class="welcome-title">System Design Expert · Ready</h2>
+                    <p class="welcome-desc">I've indexed your entire playlist with semantic embeddings. Ask me anything — load balancers, caching strategies, CAP theorem, database design, or any concept from the videos.</p>
+                    <div class="quick-chips">
+                        <button class="chip" onclick="injectQuery('Explain consistent hashing with timestamp')">Consistent Hashing</button>
+                        <button class="chip" onclick="injectQuery('What is CAP theorem?')">CAP Theorem</button>
+                        <button class="chip" onclick="injectQuery('How does CDN caching work?')">CDN Caching</button>
+                        <button class="chip" onclick="injectQuery('Explain database sharding')">DB Sharding</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="input-zone">
+            <div class="input-wrapper">
+                <div class="input-prefix">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </div>
+                <input type="text" id="user-input" placeholder="Ask about any concept from the playlist..." autocomplete="off">
+                <div class="input-actions">
+                    <button id="send-btn" title="Send">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        <span>ASK</span>
+                    </button>
+                </div>
+            </div>
+            <div class="footer-bar">
+                <span>Powered by LLaMA · FAISS Vector Search · Enterprise RAG Pipeline</span>
+                <span id="char-count">0 / 500</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // ─── NEURAL NETWORK PARTICLE ANIMATION ───────────────────────────
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H, nodes = [], animId;
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+
+        function Node() {
+            this.x = Math.random() * W;
+            this.y = Math.random() * H;
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.vy = (Math.random() - 0.5) * 0.4;
+            this.r = Math.random() * 1.5 + 0.5;
+            this.pulse = Math.random() * Math.PI * 2;
+        }
+
+        function initNodes() {
+            nodes = [];
+            const count = Math.floor((W * H) / 14000);
+            for (let i = 0; i < count; i++) nodes.push(new Node());
+        }
+
+        function drawFrame() {
+            ctx.clearRect(0, 0, W, H);
+
+            // Update positions
+            nodes.forEach(n => {
+                n.x += n.vx; n.y += n.vy;
+                n.pulse += 0.015;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+            });
+
+            // Draw connections
+            const MAX_DIST = 160;
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < MAX_DIST) {
+                        const alpha = (1 - dist / MAX_DIST) * 0.18;
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Draw nodes
+            nodes.forEach(n => {
+                const glow = (Math.sin(n.pulse) + 1) / 2;
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.r + glow * 0.8, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(56, 189, 248, ${0.4 + glow * 0.5})`;
+                ctx.fill();
+            });
+
+            animId = requestAnimationFrame(drawFrame);
+        }
+
+        window.addEventListener('resize', () => { resize(); initNodes(); });
+        resize(); initNodes(); drawFrame();
+
+        // ─── MOUSE REPEL EFFECT ───────────────────────────────────────────
+        document.addEventListener('mousemove', e => {
+            nodes.forEach(n => {
+                const dx = n.x - e.clientX;
+                const dy = n.y - e.clientY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 80) {
+                    n.vx += dx / dist * 0.12;
+                    n.vy += dy / dist * 0.12;
+                    // cap speed
+                    const speed = Math.sqrt(n.vx*n.vx + n.vy*n.vy);
+                    if (speed > 2) { n.vx /= speed/2; n.vy /= speed/2; }
+                }
+            });
+        });
+
+        // ─── QUERY INJECT (CHIPS) ─────────────────────────────────────────
+        function injectQuery(q) {
+            document.getElementById('user-input').value = q;
+            document.getElementById('user-input').focus();
+            updateCharCount();
+        }
+
+        // ─── CHAR COUNT ───────────────────────────────────────────────────
+        function updateCharCount() {
+            const len = document.getElementById('user-input').value.length;
+            document.getElementById('char-count').textContent = `${len} / 500`;
+        }
+        document.getElementById('user-input').addEventListener('input', updateCharCount);
+
+        // ─── QUERY COUNTER ────────────────────────────────────────────────
+        let queryCount = 0;
+        window._incrementQuery = function() {
+            queryCount++;
+            document.getElementById('query-count').textContent = queryCount;
+        };
+    </script>
+</body>
+</html>
