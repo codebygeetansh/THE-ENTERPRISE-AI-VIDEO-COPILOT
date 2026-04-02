@@ -33,30 +33,8 @@
 
 ---
 
-## 🚀 How to Run Locally
 
-Follow these steps to experience the Enterprise Video Copilot on your machine:
 
-### 1. Start the AI Brain (Ollama)
-Ensure you have Ollama installed and the LLaMA model pulled. Let it run in the background.
-```bash
-ollama run llama3.2
-2. Start the Backend Server
-Navigate to the project directory, activate your Python environment, and start the Flask server.
 
-Bash
-pip install -r requirements.txt
-python Backend/App.py
-Wait until you see * Running on http://127.0.0.1:5000 in the terminal.
 
-3. Launch the UI
-Simply open the Frontend/index.html file in any modern web browser (Chrome, Edge, Safari). No frontend build tools required!
 
-💡 Real-World Applications
-EdTech: Students can instantly search for specific concepts across 100+ hours of course material.
-
-Corporate Onboarding: New employees can query HR training videos for immediate policy answers.
-
-Meeting Minutes: Extract decisions and specific discussions from long recorded corporate Zoom calls.
-
-Customer Support: Agents can instantly retrieve step-by-step guides from product tutorial videos.
